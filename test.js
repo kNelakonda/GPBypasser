@@ -1,45 +1,48 @@
 var name;
-var selectedFile;
+var year;
+var variables;
+
 function getName(){
 	name = $("#firstname")[0].value + " " + $("#lastname")[0].value;
-	console.log(name);
-	selectedFile = $("#javafile")[0].files[0];
-	console.log(selectedFile);
-	var reader = new FileReader();
-	var text;
-	var variableSet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
-	reader.onload = function(e) {
+	
+	year = $("#year")[0].value;
+	variables = $("#variables")[0].value.split(", ");
+	
+	
+	var text = $("#javatext")[0].value;
+	
+	
 		
-		//console.log(reader.result);
-		var textName = reader.result.replace("Jessica Jiang", name);
-		console.log(textName);
 		
+		var textName = text.replace("Jessica Jiang", name);
+		
+		var textDate = textName.replace("2015", year)
 		
 		//next stuff here
-		var textVariables = replaceVariables(textName, variableSet);
+		var textVariables = replaceVariables(textDate, variables);
 		console.log(textVariables);
-	}
-	reader.readAsText(selectedFile);
-
+	$("#javaresult")[0].value = textVariables;
 }
 
-function replaceVariables(originalText, variableSet) {
+function replaceVariables(originalText, variables) {
 	var index = 0;
 	var newText = originalText;
-	var pieces = originalText.split("  int ");
-	for(var i = 1; i< pieces.length; i++){
-		var varName = pieces[i].substring(0, pieces[i].indexOf(" "));
-		console.log(varName);
-		if(varName.length > 1)
-		{
-			newText = replaceAll(newText, varName, variableSet[index] );
-			console.log(newText);
-			index++;
-			if (index >= variableSet){
-				index=0;
+	//console.log(variables);
+	for (var j = 0; j<variables.length; j++)
+	{
+		var pieces = originalText.split("  "+variables[j] + " ");
+		for(var i = 1; i< pieces.length; i++){
+			var varName = pieces[i].substring(0, pieces[i].indexOf(" "));
+			//console.log(varName);
+			if(varName.length > 1)
+			{
+				var noVowels = removeVowels(varName);
+			
+				newText = replaceAll(newText, varName, noVowels );
+				//console.log(newText);			
 			}
-		}
 		
+		}
 	}
 	return newText;
 }
@@ -53,8 +56,10 @@ function escapeRegExp(str) {
 function removeVowels(str){
 	var vowels = ["a", "e", "i", "o", "u"];
 	var newStr = str;
-	for(vowel in vowels){
+	for(var i = 0; i < vowels.length; i++){
+		var vowel = vowels[i];
 		newStr = newStr.replace(vowel, "");
+		
 	}
 	if(newStr.length == 0){
 		return str;
